@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateRegularDto } from './dto/create-regular.dto';
-import { UpdateRegularDto } from './dto/update-regular.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Regular } from './entities/regular.entity';
 import { Repository } from 'typeorm';
@@ -41,14 +40,8 @@ export class RegularService {
     return regular;
   }
 
-  async update(id: number, urDto: UpdateRegularDto): Promise<Regular> {
-    const regular = await this.findOne(id);
-    Object.assign(regular, urDto);
-    return this.regularRepository.save(regular);
-  }
-
-  async remove(id: number): Promise<Regular> {
-    const regular = await this.findOne(id);
-    return this.regularRepository.remove(regular);
+  async removeAll(): Promise<Regular[]> {
+    const regulars = await this.findAll();
+    return this.regularRepository.remove(regulars);
   }
 }
