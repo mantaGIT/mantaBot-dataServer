@@ -26,17 +26,17 @@ export class RegularController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.regularService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.regularService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRegularDto: UpdateRegularDto) {
-    return this.regularService.update(+id, updateRegularDto);
+  update(@Param('id') id: number, @Body() updateRegularDto: UpdateRegularDto) {
+    return this.regularService.update(id, updateRegularDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.regularService.remove(+id);
+  remove(@Param('id') id: number) {
+    return this.regularService.remove(id);
   }
 }
