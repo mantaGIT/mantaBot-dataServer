@@ -41,7 +41,7 @@ export class RegularService {
   }
 
   async removeAll(): Promise<Regular[]> {
-    const regulars = await this.findAll();
+    const regulars = await this.regularRepository.find();
     return this.regularRepository.remove(regulars);
   }
 }
