@@ -1,28 +1,29 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { RegularService } from './regular.service';
-import { CreateRegularDto } from './dto/create-regular.dto';
+// import { Post, Body, Delete } from '@nestjs/common';
+// import { CreateRegularDto } from './dto/create-regular.dto';
 
 @Controller('regular')
 export class RegularController {
   constructor(private readonly regularService: RegularService) {}
 
-  @Post('create')
-  create(@Body() createRegularDto: CreateRegularDto) {
-    return this.regularService.create(createRegularDto);
-  }
+  // @Post('create')
+  // async create(@Body() createRegularDto: CreateRegularDto) {
+  //   return await this.regularService.create(createRegularDto);
+  // }
 
   @Get()
-  findAll() {
-    return this.regularService.findAll();
+  async findAll() {
+    return await this.regularService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.regularService.findOne(id);
+  async findOne(@Param('id') id: number) {
+    return await this.regularService.findOne(id);
   }
 
-  @Delete()
-  removeAll() {
-    return this.regularService.removeAll();
-  }
+  // @Delete()
+  // async removeAll() {
+  //   return await this.regularService.removeAll();
+  // }
 }
