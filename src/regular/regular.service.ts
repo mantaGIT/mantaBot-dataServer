@@ -7,6 +7,7 @@ import { CreateRegularDto } from './dto/create-regular.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Regular } from './entities/regular.entity';
 import { Repository } from 'typeorm';
+import { get as lodashGet, map as lodashMap } from 'lodash';
 
 @Injectable()
 export class RegularService {
@@ -43,5 +44,31 @@ export class RegularService {
   async removeAll(): Promise<Regular[]> {
     const regulars = await this.regularRepository.find();
     return this.regularRepository.remove(regulars);
+  }
+
+  async parse(
+    schedData: object,
+    localeData: object,
+  ): Promise<CreateRegularDto[]> {
+    const nodes: Array<object> = lodashGet(
+      schedData,
+      `data.regularSchedules.nodes`,
+    );
+
+    const regulars: CreateRegularDto[] = nodes.map((regularNode, index) => {
+      const setting = lodashGet(regularNode, 'regularMatchSetting');
+      const ruleId = lodashGet(setting, 'vsRule.id');
+      const stageIds = lodashMap(lodashGet(setting, 'vsStages'), 'id');
+      return {
+        id: index,
+        startTime: regularNode['startTime'],
+        endTime: regularNode['endTime'],
+        rule: localeData['rules'][ruleId]['name'],
+        stages: stageIds.map(
+          (stageId) => localeData['stages'][stageId]['name'],
+        ),
+      };
+    });
+    return regulars;
   }
 }
