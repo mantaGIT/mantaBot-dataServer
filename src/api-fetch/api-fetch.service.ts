@@ -8,10 +8,7 @@ export class ApiFetchService {
 
   async apiFetch(apiUrl: string): Promise<AxiosResponse<object>> {
     try {
-      const response = await this.httpService.axiosRef({
-        url: apiUrl,
-        method: `GET`,
-      });
+      const response = await this.httpService.axiosRef.get(apiUrl);
       return response.data;
     } catch (error) {
       const errorMsg =
