@@ -5,7 +5,7 @@ import { TestBed } from '@automock/jest';
 import { InternalServerErrorException } from '@nestjs/common';
 
 const mockResponse = {
-  data: { id: 1, name: 'Test Cat' },
+  data: { id: 1, name: 'Test' },
   status: 200,
   statusText: 'OK',
   headers: new AxiosHeaders(),
@@ -24,14 +24,26 @@ const mockError = {
   toJSON: () => ({}),
 };
 
+enum REQUEST {
+  SUCCESS = 'http://request-success',
+  FAILURE = 'http://request-failure',
+}
+
 describe('ApiFetchService', () => {
   let service: ApiFetchService;
-  let httpService: jest.Mocked<HttpService>;
 
   beforeEach(async () => {
-    const { unit, unitRef } = TestBed.create(ApiFetchService).compile();
+    const { unit } = TestBed.create(ApiFetchService)
+      .mock<HttpService>(HttpService)
+      .using({
+        axiosRef: {
+          get: jest.fn((url) =>
+            url === REQUEST.SUCCESS ? mockResponse : mockError,
+          ),
+        },
+      })
+      .compile();
     service = unit;
-    httpService = unitRef.get(HttpService);
   });
 
   it('should be defined', () => {
@@ -40,18 +52,13 @@ describe('ApiFetchService', () => {
 
   describe('apiFetch', () => {
     it('HTTP GET 요청을 통해 데이터를 가져온다.', async () => {
-      httpService.axiosRef.mockResolvedValue(mockResponse);
-
-      const result = await service.apiFetch('http://test.url');
+      const result = await service.apiFetch(REQUEST.SUCCESS);
       expect(result).toEqual(mockResponse.data);
-      expect(result).not.toBeNull();
-      expect(result).not.toBeUndefined();
     });
 
     it('데이터를 가져오지 못할 경우 에러를 발생시킨다.', async () => {
-      httpService.axiosRef.mockResolvedValue(mockError);
       try {
-        await service.apiFetch('http://test.url');
+        await service.apiFetch(REQUEST.FAILURE);
       } catch (error) {
         expect(error).toBeInstanceOf(InternalServerErrorException);
       }
