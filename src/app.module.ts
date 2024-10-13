@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { RegularModule } from './regular/regular.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { ApiFetchModule } from './api-fetch/api-fetch.module';
+import { FetchSchedulerModule } from './fetch-scheduler/fetch-scheduler.module';
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { ApiFetchModule } from './api-fetch/api-fetch.module';
       // logger: 'advanced-console',
     }),
     RegularModule,
-    ApiFetchModule,
+    FetchSchedulerModule,
   ],
 })
 export class AppModule {}
