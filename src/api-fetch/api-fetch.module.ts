@@ -5,5 +5,6 @@ import { HttpModule } from '@nestjs/axios';
 @Module({
   imports: [HttpModule],
   providers: [ApiFetchService],
+  exports: [ApiFetchService],
 })
 export class ApiFetchModule {}

@@ -8,5 +8,6 @@ import { Regular } from './entities/regular.entity';
   imports: [TypeOrmModule.forFeature([Regular])],
   controllers: [RegularController],
   providers: [RegularService],
+  exports: [RegularService],
 })
 export class RegularModule {}
