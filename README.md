@@ -24,3 +24,9 @@
 새로운 데이터 구조 추가 등의 확장성을 고려하여 각 데이터 처리를 모듈로 생성하고 관리합니다.
 
 <img width="1200" alt="image" src="https://github.com/user-attachments/assets/83a464c9-41fa-4f28-a888-78342ef657fd">
+
+
+## 진행 상황
+
+- 개발 진행 브랜치 : [develop](https://github.com/mantaGIT/mantaBot-dataServer/tree/develop)
+- 프로젝트 진행 상황 : [봇 데이터 서버 분리 및 API 구축](https://github.com/users/mantaGIT/projects/3)
