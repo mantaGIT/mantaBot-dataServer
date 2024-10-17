@@ -12,19 +12,22 @@ export class ApiFetchService {
     private readonly logger: CustomLoggerService,
   ) {}
 
+  /**
+   * 주어진 API에 GET 요청을 보낸다.
+   * @param apiUrl GET API 엔드포인트
+   * @returns
+   */
   async apiFetch(apiUrl: string): Promise<AxiosResponse<object>> {
     try {
+      // HTTP api GET 요청 -> 응답 데이터 반환
       const response = await this.httpService.axiosRef.get(apiUrl);
       this.logger.verbose(`Fetch : ${apiUrl}`, this.CONTEXT); // log
       return response.data;
     } catch (error) {
-      // console.log(error);
-      // const errorMsg =
-      //   error instanceof AxiosError
-      //     ? `API Fetch Error - ${apiUrl}, (${error.response.status}) ${error.response.statusText}`
-      //     : error.message;
-      this.logger.error(error.message, error.stack, this.CONTEXT); // log
-      // throw new InternalServerErrorException(error.message);
+      // API 엔드포인트 - 에러 메시지 로깅
+      const errorMsg = [`${apiUrl}`, error.message].join(' - ');
+      this.logger.error(errorMsg, error.stack, this.CONTEXT);
+      throw error;
     }
   }
 }

@@ -8,8 +8,9 @@ export class CustomLoggerService extends ConsoleLogger {
   }
 
   error(message: string, trace?: string, context?: string) {
-    super.error(message, trace, context ? context : '');
-    // this.discordEmit(); //
+    super.error(message, undefined, context ? context : '');
+    // log에는 trace는 남기지 않기 - discord webhook으로 전달
+    // this.discordEmit();
   }
 
   verbose(message: string, context?: string) {
