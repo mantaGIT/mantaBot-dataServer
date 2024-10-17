@@ -3,6 +3,9 @@ import { RegularModule } from './regular/regular.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { FetchSchedulerModule } from './fetch-scheduler/fetch-scheduler.module';
+import { CustomLoggerModule } from './custom-logger/custom-logger.module';
+import { AppService } from './app.service';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -24,6 +27,9 @@ import { FetchSchedulerModule } from './fetch-scheduler/fetch-scheduler.module';
     }),
     RegularModule,
     FetchSchedulerModule,
+    CustomLoggerModule,
   ],
+  providers: [AppService],
+  controllers: [AppController],
 })
 export class AppModule {}
