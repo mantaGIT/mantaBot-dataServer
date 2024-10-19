@@ -6,6 +6,8 @@ import { FetchSchedulerModule } from './fetch-scheduler/fetch-scheduler.module';
 import { CustomLoggerModule } from './custom-logger/custom-logger.module';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
+import { APP_FILTER } from '@nestjs/core';
+import { CustomExceptionFilter } from './custom-exception/custom-exception.filter';
 
 @Module({
   imports: [
@@ -29,7 +31,10 @@ import { AppController } from './app.controller';
     FetchSchedulerModule,
     CustomLoggerModule,
   ],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_FILTER, useClass: CustomExceptionFilter },
+  ],
   controllers: [AppController],
 })
 export class AppModule {}
