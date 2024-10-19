@@ -5,7 +5,7 @@ import { CustomLoggerService } from './custom-logger/custom-logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    bufferLogs: true,
+    // bufferLogs: true,
   });
   app.useLogger(app.get(CustomLoggerService));
   app.useGlobalPipes(
