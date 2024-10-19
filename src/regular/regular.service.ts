@@ -18,39 +18,14 @@ export class RegularService {
   ) {}
 
   /**
-   * Regualr 테이블 데이터를 여러 개 생성합니다.
-   * @param createRegularDtos DTO 배열
-   * @returns
-   */
-  async saveAll(createRegularDtos: CreateRegularDto[]): Promise<Regular[]> {
-    let result: Regular[] = [];
-    try {
-      await this.regularRepository.manager.transaction(
-        async (transactionalEntityManager) => {
-          const entities = transactionalEntityManager.create(
-            Regular,
-            createRegularDtos,
-          );
-          result = await transactionalEntityManager.save(entities);
-        },
-      );
-      this.logger.log('Save all schedules', this.CONTEXT);
-    } catch (error) {
-      const errorMsg = ['Save error', error.message].join(' - ');
-      this.logger.error(errorMsg, error.stack, this.CONTEXT);
-      throw error;
-    }
-    return result;
-  }
-
-  /**
    * Regular 테이블 전체 조회
    * @returns
    */
   async findAll(): Promise<Regular[]> {
     try {
-      this.logger.log('Find schedules', this.CONTEXT);
-      return this.regularRepository.find();
+      const result = this.regularRepository.find();
+      this.logger.verbose(`GET API Response Success`, this.CONTEXT);
+      return result;
     } catch (error) {
       const errorMsg = ['Find error', error.message].join(' - ');
       this.logger.error(errorMsg, error.stack, this.CONTEXT);
@@ -59,22 +34,30 @@ export class RegularService {
   }
 
   /**
-   * Regular 테이블 데이터를 전체 삭제합니다.
-   * @returns
+   * 입력받은 데이터로 Regular 테이블 전체를 업데이트합니다.
+   * @param createRegularDtos DTO 배열
    */
-  async removeAll(): Promise<Regular[]> {
-    let result: Regular[] = [];
+  async updateAll(
+    createRegularDtos: CreateRegularDto[],
+  ): Promise<Regular[] | any> {
     try {
       await this.regularRepository.manager.transaction(
         async (transactionalEntityManager) => {
+          // remove all
           const regulars = await transactionalEntityManager.find(Regular);
-          result = await transactionalEntityManager.remove(regulars);
+          await transactionalEntityManager.remove(regulars);
+
+          // create all
+          const entities = transactionalEntityManager.create(
+            Regular,
+            createRegularDtos,
+          );
+          const result = await transactionalEntityManager.save(entities);
+          return result;
         },
       );
-      this.logger.log('Remove all schedules', this.CONTEXT);
-      return result;
     } catch (error) {
-      const errorMsg = ['Remove error', error.message].join(' - ');
+      const errorMsg = ['Update error', error.message].join(' - ');
       this.logger.error(errorMsg, error.stack, this.CONTEXT);
       throw error;
     }
@@ -110,7 +93,7 @@ export class RegularService {
           ),
         };
       });
-      this.logger.log(`Parse success`, this.CONTEXT);
+      // this.logger.log(`Parse success`, this.CONTEXT);
       return regulars;
     } catch (error) {
       const errorMsg = [`Parse error`, error.message].join(' - ');

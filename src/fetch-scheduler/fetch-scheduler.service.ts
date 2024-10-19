@@ -25,14 +25,18 @@ export class FetchSchedulerService implements OnModuleInit {
         process.env.LOCALE_URL,
       );
 
-      // 기존 데이터 전체 삭제하기
-      await this.regularService.removeAll();
-
       // 데이터 파싱하여 저장하기
       const parsedRegulars = await this.regularService.parse(sched, locale);
-      await this.regularService.saveAll(parsedRegulars);
+      await this.regularService.updateAll(parsedRegulars);
+
+      // 로깅
+      this.logger.log('Fetch-schedule task success', this.CONTEXT);
     } catch (error) {
-      this.logger.error(`Fetch-schedule task error`, error.stack, this.CONTEXT);
+      this.logger.error(
+        `Fetch-schedule task failure`,
+        error.stack,
+        this.CONTEXT,
+      );
     }
   }
 
