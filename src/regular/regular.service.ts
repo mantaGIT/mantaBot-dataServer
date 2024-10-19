@@ -7,58 +7,61 @@ import { Repository } from 'typeorm';
 import { get as lodashGet, map as lodashMap } from 'lodash';
 import { CustomLoggerService } from 'src/custom-logger/custom-logger.service';
 
+const SCHED_ENTITY = Regular; // typeorm entity
+type EntityT = typeof SCHED_ENTITY; // entity type
+type DtoT = CreateRegularDto; // dto type
+
 @Injectable()
 export class RegularService {
   private readonly CONTEXT = 'Regular';
 
   constructor(
-    @InjectRepository(Regular)
-    private readonly regularRepository: Repository<Regular>,
+    @InjectRepository(SCHED_ENTITY)
+    private readonly repository: Repository<EntityT>,
     private readonly logger: CustomLoggerService,
   ) {}
 
   /**
-   * Regular 테이블 전체 조회
+   * Regular 테이블 전체 데이터를 조회합니다.
    * @returns
    */
-  async findAll(): Promise<Regular[]> {
+  async findAll(): Promise<EntityT[]> {
     try {
-      const result = this.regularRepository.find();
+      const found = this.repository.find();
       this.logger.verbose(`GET API Response Success`, this.CONTEXT);
-      return result;
+      return found;
     } catch (error) {
-      const errorMsg = ['Find error', error.message].join(' - ');
-      this.logger.error(errorMsg, error.stack, this.CONTEXT);
+      this.logger.error(
+        `Find all error - ${error.message}`,
+        error.stack,
+        this.CONTEXT,
+      );
       throw error;
     }
   }
 
   /**
    * 입력받은 데이터로 Regular 테이블 전체를 업데이트합니다.
-   * @param createRegularDtos DTO 배열
+   * @param dtos DTO 배열
    */
-  async updateAll(
-    createRegularDtos: CreateRegularDto[],
-  ): Promise<Regular[] | any> {
+  async updateAll(dtos: DtoT[]): Promise<EntityT[] | void> {
     try {
-      await this.regularRepository.manager.transaction(
-        async (transactionalEntityManager) => {
-          // remove all
-          const regulars = await transactionalEntityManager.find(Regular);
-          await transactionalEntityManager.remove(regulars);
+      await this.repository.manager.transaction(async (entityManager) => {
+        // remove all
+        const found = await entityManager.find(SCHED_ENTITY);
+        await entityManager.remove(found);
 
-          // create all
-          const entities = transactionalEntityManager.create(
-            Regular,
-            createRegularDtos,
-          );
-          const result = await transactionalEntityManager.save(entities);
-          return result;
-        },
-      );
+        // create all
+        const entities = entityManager.create(SCHED_ENTITY, dtos);
+        const saved = await entityManager.save(entities);
+        return saved;
+      });
     } catch (error) {
-      const errorMsg = ['Update error', error.message].join(' - ');
-      this.logger.error(errorMsg, error.stack, this.CONTEXT);
+      this.logger.error(
+        `Update all error - ${error.message}`,
+        error.stack,
+        this.CONTEXT,
+      );
       throw error;
     }
   }
@@ -69,24 +72,21 @@ export class RegularService {
    * @param localeData 원본 한글화 데이터
    * @returns
    */
-  async parse(
-    schedData: object,
-    localeData: object,
-  ): Promise<CreateRegularDto[]> {
+  async parse(schedData: object, localeData: object): Promise<DtoT[]> {
     try {
       const nodes: Array<object> = lodashGet(
         schedData,
         `data.regularSchedules.nodes`,
       );
 
-      const regulars: CreateRegularDto[] = nodes.map((regularNode, index) => {
-        const setting = lodashGet(regularNode, 'regularMatchSetting');
+      const parsed: DtoT[] = nodes.map((node, index) => {
+        const setting = lodashGet(node, 'regularMatchSetting');
         const ruleId = lodashGet(setting, 'vsRule.id');
         const stageIds = lodashMap(lodashGet(setting, 'vsStages'), 'id');
         return {
           id: index,
-          startTime: regularNode['startTime'],
-          endTime: regularNode['endTime'],
+          startTime: node['startTime'],
+          endTime: node['endTime'],
           rule: localeData['rules'][ruleId]['name'],
           stages: stageIds.map(
             (stageId) => localeData['stages'][stageId]['name'],
@@ -94,10 +94,13 @@ export class RegularService {
         };
       });
       // this.logger.log(`Parse success`, this.CONTEXT);
-      return regulars;
+      return parsed;
     } catch (error) {
-      const errorMsg = [`Parse error`, error.message].join(' - ');
-      this.logger.error(errorMsg, error.stack, this.CONTEXT);
+      this.logger.error(
+        `Parse error - ${error.message}`,
+        error.stack,
+        this.CONTEXT,
+      );
       throw error;
     }
   }
