@@ -25,8 +25,11 @@ export class ApiFetchService {
       return response.data;
     } catch (error) {
       // API 엔드포인트 - 에러 메시지 로깅
-      const errorMsg = [`${apiUrl}`, error.message].join(' - ');
-      this.logger.error(errorMsg, error.stack, this.CONTEXT);
+      this.logger.error(
+        `${apiUrl} - ${error.message}`,
+        error.stack,
+        this.CONTEXT,
+      );
       throw error;
     }
   }

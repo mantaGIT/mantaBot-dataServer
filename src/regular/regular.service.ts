@@ -31,8 +31,11 @@ export class RegularService {
       this.logger.verbose(`GET API Response Success`, this.CONTEXT);
       return found;
     } catch (error) {
-      const errorMsg = ['Find error', error.message].join(' - ');
-      this.logger.error(errorMsg, error.stack, this.CONTEXT);
+      this.logger.error(
+        `Find all error - ${error.message}`,
+        error.stack,
+        this.CONTEXT,
+      );
       throw error;
     }
   }
@@ -54,8 +57,11 @@ export class RegularService {
         return saved;
       });
     } catch (error) {
-      const errorMsg = ['Update error', error.message].join(' - ');
-      this.logger.error(errorMsg, error.stack, this.CONTEXT);
+      this.logger.error(
+        `Update all error - ${error.message}`,
+        error.stack,
+        this.CONTEXT,
+      );
       throw error;
     }
   }
@@ -90,8 +96,11 @@ export class RegularService {
       // this.logger.log(`Parse success`, this.CONTEXT);
       return parsed;
     } catch (error) {
-      const errorMsg = [`Parse error`, error.message].join(' - ');
-      this.logger.error(errorMsg, error.stack, this.CONTEXT);
+      this.logger.error(
+        `Parse error - ${error.message}`,
+        error.stack,
+        this.CONTEXT,
+      );
       throw error;
     }
   }
